@@ -41,6 +41,7 @@ class LinkedList(BaseList):
         node = self.head_node.next_node
         pre_node = self.head_node
         counter = 0
+        idx = idx if idx != -1 else self.length - 1
         while 1:
             if idx != counter:
                 counter += 1
