@@ -21,19 +21,19 @@ class LogisticRegression(object):
         self.coef_ = None
         self.tol = tol
         self.max_iter = max_iter
-        self.interception_ = None
+        self.intercept_ = None
 
     def _init_coef(self, X):
         coef = np.random.random((X.shape[1], 1))
-        self.interception_ = np.zeros((1,)) / 100
+        self.intercept_ = np.zeros((1,)) / 100
         if self.fit_interception:
             size = (1,)
-            self.interception_ = np.random.random(size) / 100
+            self.intercept_ = np.random.random(size) / 100
         return coef
 
     def _fit_one_iter(self, X, y, coef):
         # keepdims is important!!!!! or y_hat - y will be broadcast
-        logit = np.sum(np.dot(X, coef), axis=1, keepdims=True) + self.interception_
+        logit = np.sum(np.dot(X, coef), axis=1, keepdims=True) + self.intercept_
         y_hat = activations.sigmoid(logit)
         loss = losses.binary_crossentropy(y, y_hat)
         # dW vector implement has no `sum equation`
@@ -55,7 +55,7 @@ class LogisticRegression(object):
             # print(_, ":", loss)
             coef -= learning_rate * dW
             if self.fit_interception:
-                self.interception_ -= learning_rate * db
+                self.intercept_ -= learning_rate * db
             if 0 < pre_loss - loss < self.tol:
                 break
             pre_loss = loss
@@ -70,7 +70,7 @@ class LogisticRegression(object):
         return self
 
     def predict(self, X):
-        logit = np.sum(np.dot(X, self.coef_), axis=1) + self.interception_
+        logit = np.sum(np.dot(X, self.coef_), axis=1) + self.intercept_
         y_hat = activations.sigmoid(logit)
         return (y_hat > 0.5).astype(int)
 
@@ -103,6 +103,8 @@ if __name__ == '__main__':
 
     print("train model")
     model.fit(X_train, y_train)
+    print(model.coef_)
+    print(model.intercept_)
     print("my model:", accuracy_score(y_train, model.predict(X_train)))
     print("my model:", accuracy_score(y_test, model.predict(X_test)))
 
@@ -110,5 +112,7 @@ if __name__ == '__main__':
 
     model = LogisticRegression()
     model.fit(X_train, y_train)
+    print(model.coef_)
+    print(model.intercept_)
     print("sklearn:", accuracy_score(y_train, model.predict(X_train)))
     print("sklearn:", accuracy_score(y_test, model.predict(X_test)))
